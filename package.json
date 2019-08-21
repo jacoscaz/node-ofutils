@@ -1,0 +1,23 @@
+{
+  "name": "ofutils",
+  "version": "0.0.1-alpha.7",
+  "description": "A collection of utility scripts for OmniFocus",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "ofutils": "./bin/ofutils.js"
+  },
+  "files": [
+    "lib/",
+    "bin/",
+    "index.js"
+  ],
+  "author": "Jacopo Scazzosi <jacopo@scazzosi.com>",
+  "license": "MIT",
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "commander": "^3.0.0"
+  }
+}
