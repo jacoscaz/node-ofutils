@@ -1,6 +1,6 @@
 {
   "name": "ofutils",
-  "version": "0.0.1-alpha.7",
+  "version": "0.0.1-alpha.8",
   "description": "A collection of utility scripts for OmniFocus",
   "main": "index.js",
   "scripts": {
@@ -19,5 +19,11 @@
   "dependencies": {
     "blessed": "^0.1.81",
     "commander": "^3.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jacoscaz/node-ofutils"
+  },
+  "bugs": "https://github.com/jacoscaz/node-ofutils/issues",
+  "homepage": "https://github.com/jacoscaz/node-ofutils"
 }
