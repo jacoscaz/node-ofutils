@@ -3,6 +3,7 @@
 const assert = require('assert');
 const program = require('commander');
 const blessed = require('blessed');
+const utils = require('../lib/utils');
 const timeSpentReport = require('../lib/reports/timeSpent');
 
 // ============================================================================
@@ -25,6 +26,7 @@ const supportedGroupByCriteria = {
   task: 1,
   date: 1,
   project: 1,
+  worklog: 1,
 };
 
 const parseGroupByOption = (str) => {
@@ -106,6 +108,8 @@ const header = blessed.text({
   }
 });
 
+header.setIndex(99);
+
 const box = blessed.box({
   parent: screen,
   top: 1,
@@ -180,9 +184,10 @@ const walkReport = (parent, fn, depth = 0) => {
 };
 
 const formatters = {
-  task: parent => parent.taskName,
   date: parent => parent.date,
   project: parent => parent.projectName,
+  task: parent => utils.limit(parent.taskName, Math.round(screen.cols * 0.3)),
+  worklog: parent => utils.limit(parent.description || '', Math.round(screen.cols * 0.5)),
 };
 
 const update = (report) => {
