@@ -36,6 +36,8 @@ Options:
 The report command is the entry point for all the reporting features. Reports
 are rendered to a terminal GUI.
 
+Supported grouping criteria: `date`, `project`, `task`, `worklog`.
+
 ![terminal-based report GUI](https://raw.githubusercontent.com/jacoscaz/node-ofutils/master/screenshots/example-report.png "Gotta love terminal GUIs")
 
 ### Time spent
@@ -50,8 +52,8 @@ must be entered in the "note" section of its task as a separate line formatted
 as follows:
 
 ```sh
-spent 2019-08-20 1h
-spent 2019-08-19 1h
+time-spent 2019-08-20 1h description 1
+time-spent 2019-08-19 1h description 2
 ```
 
 ## Resources
