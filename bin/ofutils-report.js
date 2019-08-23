@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
+const Table = require('tty-table');
 const assert = require('assert');
 const program = require('commander');
-const blessed = require('blessed');
 const utils = require('../lib/utils');
 const timeSpentReport = require('../lib/reports/timeSpent');
 
@@ -82,99 +82,6 @@ program.groupBy = parseGroupByOption(program.groupBy);
 //                              REPORT FORMATTING
 // ============================================================================
 
-const screen = blessed.screen({
-  smartCSR: true,
-  dockBorders: true,
-});
-
-screen.title = 'Time Spent Report';
-
-const header = blessed.text({
-  parent: screen,
-  top: 0,
-  left: 0,
-  tags: true,
-  width: '100%',
-  height: 1,
-  content: '',
-  align: 'center',
-  valign: 'middle',
-  style: {
-    bg: 'blue',
-    fg: 'white',
-    border: {
-      fg: 'white',
-    }
-  }
-});
-
-header.setIndex(99);
-
-const box = blessed.box({
-  parent: screen,
-  top: 1,
-  left: 0,
-  width: '100%',
-  height: '100%-1',
-  scrollable: true,
-  alwaysScroll: true,
-  style: {
-    scrollbar: {
-      bg: 'red',
-      fg: 'blue'
-    }
-  },
-});
-
-const table = blessed.table({
-  parent: box,
-  width: '100%',
-  noCellBorders: false,
-  fillCellBorders: false,
-  border: {
-    type: 'line'
-  },
-  style: {
-    border: {
-      fg: 'white',
-    },
-    cell: {
-      // bg: 'magenta',
-    },
-    header: {
-      // bg: 'yellow',
-      bold: true,
-    }
-  }
-});
-
-screen.key(['escape', 'q', 'C-c'], (ch, key) => {
-  return process.exit(0);
-});
-
-screen.key(['down'], (ch, key) => {
-  box.scroll(1);
-  box.parent.render();
-});
-
-screen.key(['up'], (ch, key) => {
-  box.scroll(-1);
-  box.parent.render();
-});
-
-screen.key(['pagedown'], (ch, key) => {
-  box.scroll(1 * (box.height - 1));
-  box.parent.render();
-});
-
-screen.key(['pageup'], (ch, key) => {
-  box.scroll(-1 * (box.height - 1));
-  box.parent.render();
-});
-
-table.focus();
-
-screen.render();
 
 const walkReport = (parent, fn, depth = 0) => {
   fn(parent, depth);
@@ -186,19 +93,47 @@ const walkReport = (parent, fn, depth = 0) => {
 const formatters = {
   date: parent => parent.date,
   project: parent => parent.projectName,
-  task: parent => utils.limit(parent.taskName, Math.round(screen.cols * 0.3)),
-  worklog: parent => utils.limit(parent.description || '', Math.round(screen.cols * 0.5)),
+  task: parent => parent.taskName,
+  worklog: parent => parent.description || '',
 };
 
-const update = (report) => {
-  header.setContent(`Time Spent Report (${report.total} hr)`);
+const columnWidths = {
+  date: 12,
+  hours: 5,
+  project: 20,
+  task: null,
+  worklog: null,
+};
+
+const columnAligns = {
+  date: 'center',
+  hours: 'center',
+  project: 'left',
+  task: 'left',
+  worklog: 'left',
+};
+
+const render = (report) => {
+
+  const header = [...report.groupBy, 'hours'].map((criterion) => {
+    return {
+      value: criterion,
+      color: 'white',
+      width: columnWidths[criterion] || 'auto',
+      align: columnAligns[criterion] || 'left',
+    };
+  });
+
+  const footer = new Array(header.length).fill('');
+  footer[footer.length - 2] = 'TOTAL';
+  footer[footer.length - 1] = report.total;
+
   const rows = [];
-  rows.push([...report.groupBy, 'hours']);
   const lastAtDepth = {};
   walkReport(report, (parent, depth) => {
     lastAtDepth[depth] = parent;
     if (depth > 0) {
-      const row = new Array(report.groupBy.length + 1).fill('');
+      const row = new Array(report.groupBy.length + 1).fill(' ');
       for (let i = 1; i <= depth; i += 1) {
         row[i - 1] = formatters[report.groupBy[i - 1]](lastAtDepth[i]);
       }
@@ -206,8 +141,18 @@ const update = (report) => {
       rows.push(row);
     }
   });
-  table.setRows(rows);
-  screen.render();
+
+  const table = new Table(header, rows, footer, {
+    borderStyle: 1,
+    borderColor: "blue",
+    paddingBottom: 0,
+    headerAlign: "center",
+    align: "center",
+    color: "white",
+  });
+
+  console.log(table.render());
+
 };
 
 // ============================================================================
@@ -225,10 +170,6 @@ const opts = {
   groupBy: program.groupBy,
 };
 
-generators[program.type](opts)
-  .then((report) => {
-    update(report);
-  }).catch((err) => {
-    screen.destroy();
-    console.error(err);
-  });
+generators[program.type](opts).then((report) => {
+  render(report);
+});

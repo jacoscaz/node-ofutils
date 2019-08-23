@@ -17,8 +17,8 @@
   "author": "Jacopo Scazzosi <jacopo@scazzosi.com>",
   "license": "MIT",
   "dependencies": {
-    "blessed": "^0.1.81",
-    "commander": "^3.0.0"
+    "commander": "^3.0.0",
+    "tty-table": "^2.7.4"
   },
   "repository": {
     "type": "git",
