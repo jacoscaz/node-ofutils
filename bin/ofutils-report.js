@@ -94,7 +94,7 @@ const formatters = {
   date: parent => parent.date,
   project: parent => parent.projectName,
   task: parent => parent.taskName,
-  worklog: parent => parent.description || '',
+  worklog: parent => parent.description || '-',
 };
 
 const columnWidths = {
