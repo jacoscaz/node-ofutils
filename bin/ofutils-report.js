@@ -118,7 +118,6 @@ const render = (report) => {
   const header = [...report.groupBy, 'hours'].map((criterion) => {
     return {
       value: criterion,
-      color: 'white',
       width: columnWidths[criterion] || 'auto',
       align: columnAligns[criterion] || 'left',
     };
@@ -144,11 +143,9 @@ const render = (report) => {
 
   const table = new Table(header, rows, footer, {
     borderStyle: 1,
-    borderColor: "blue",
     paddingBottom: 0,
     headerAlign: "center",
     align: "center",
-    color: "white",
   });
 
   console.log(table.render());
